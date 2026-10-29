@@ -1,0 +1,49 @@
+{
+  "projectName": "CoolCV – UX • JS/TS • PHP • .NET Portfolio",
+  "version": "2.0.0",
+  "builtAt": "2026-10-29T01:07:04.003Z",
+  "readyForUpload": true,
+  "buildCommand": "node scripts/coolpublisher-build.mjs",
+  "ftp": {
+    "host": "ftpupload.net",
+    "port": 21,
+    "user": "if0_43292832",
+    "secure": true,
+    "rejectUnauthorized": false
+  },
+  "mappings": [
+    {
+      "name": "Frontend - Web (React 18 + TS Build)",
+      "type": "react-web",
+      "localPath": "./dist/publish/react-web",
+      "remotePath": "/htdocs",
+      "enabled": true,
+      "exclude": [
+        "*.map"
+      ]
+    },
+    {
+      "name": "Frontend - Backoffice (React 18 + TS Admin)",
+      "type": "react-backoffice",
+      "localPath": "./dist/publish/react-backoffice",
+      "remotePath": "/htdocs",
+      "enabled": true,
+      "exclude": [
+        "*.map"
+      ]
+    },
+    {
+      "name": "Backend - REST API & AES-256/JWT (PHP 8)",
+      "type": "php-api",
+      "localPath": "./dist/publish/php-api",
+      "remotePath": "/htdocs",
+      "enabled": true,
+      "exclude": [
+        ".env.local",
+        ".git/**",
+        "app.sqlite",
+        "vendor/**"
+      ]
+    }
+  ]
+}

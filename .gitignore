@@ -1,0 +1,8 @@
+node_modules/
+dist/publish/
+vendor/
+database/*.sqlite
+database/*.sqlite-journal
+.DS_Store
+Thumbs.db
+.env

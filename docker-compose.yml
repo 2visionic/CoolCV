@@ -1,0 +1,61 @@
+services:
+  # 1. PHP 8.2 + Apache server (simulace PHP freehostingu) -> http://localhost:8000
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: coolcv_php
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+    environment:
+      APP_ENV: development
+      DB_MYSQL_ENABLED: "true"
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: coolcv
+      DB_USER: coolcv_user
+      DB_PASS: coolcv_pass
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 2. MySQL 8.0 databáze (automaticky naimportuje database/mysql_phpmyadmin.sql)
+  db:
+    image: mysql:8.0
+    container_name: coolcv_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: coolcv
+      MYSQL_USER: coolcv_user
+      MYSQL_PASSWORD: coolcv_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/mysql_phpmyadmin.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 3. phpMyAdmin (stejné rozhraní jako na freehostingu) -> http://localhost:8080
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: coolcv_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: coolcv_user
+      PMA_PASSWORD: coolcv_pass
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
