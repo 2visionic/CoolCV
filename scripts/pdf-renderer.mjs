@@ -295,7 +295,7 @@ export function buildResumeHtml(cvData, lang = 'cs') {
           </div>
 
           <p style="font-size: 14.5px; font-weight: 800; line-height: 1.25; color: #0f172a; margin: 0 0 10px 0;">
-            <span>${esc(t(profile, 'tagline_1', safeLang))}</span>
+            <span>${esc(t(profile, 'tagline_1', safeLang).trimEnd() + ' ')}</span>
             <span style="color: #c026d3;">${esc(t(profile, 'tagline_highlight', safeLang))}</span>
           </p>
 
@@ -359,7 +359,8 @@ export function buildResumeHtml(cvData, lang = 'cs') {
 
           <div>
             ${experience
-              .map((exp, expIdx) => {
+              .slice(0, 3)
+              .map((exp, expIdx, arr) => {
                 const expTags = String(exp.role_tags || '')
                   .split(',')
                   .map((s) => s.trim())
@@ -369,7 +370,7 @@ export function buildResumeHtml(cvData, lang = 'cs') {
                   .map((s) => s.trim())
                   .filter(Boolean);
                 const firstAch = achs[0] || '';
-                const isLastExp = expIdx === experience.length - 1;
+                const isLastExp = expIdx === arr.length - 1;
                 const padStyle =
                   expIdx === 0
                     ? 'padding-bottom: 22px;'

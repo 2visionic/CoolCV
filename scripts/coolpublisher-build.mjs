@@ -86,6 +86,7 @@ fs.writeFileSync(
 const apiStage = path.join(stageRoot, 'php-api');
 copyFileEnsured('api.php', path.join(apiStage, 'api.php'));
 copyFileEnsured('config.php', path.join(apiStage, 'config.php'));
+copyFileEnsured('config.secret.php', path.join(apiStage, 'config.secret.php'));
 copyFileEnsured('.htaccess', path.join(apiStage, '.htaccess'));
 copyDirEnsured('backend', path.join(apiStage, 'backend'));
 copyDirEnsured('database', path.join(apiStage, 'database'), ['app.sqlite']);

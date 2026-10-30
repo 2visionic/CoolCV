@@ -1,0 +1,13 @@
+# Zákaz výpisu adresářů
+Options -Indexes
+
+# Zákaz přímého přístupu ke konfiguračním a databázovým souborům přes HTTP
+<FilesMatch "^(config\.php|config\.secret\.php|coolpublisher\.json|package\.json|package-lock\.json|tsconfig\.json|vite\.config\.js|docker-compose\.yml|Dockerfile|\.env.*)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

@@ -133,6 +133,7 @@ $renderIcon = static function (string $iconVal, string $extraClass = ''): string
 };
 
 $page1Skills = array_slice($skills, 0, 6);
+$page1Experience = array_slice($experience, 0, 3);
 
 $rawWebsite = trim((string)($profile['website'] ?? 'https://coolcv.example.cz'));
 $websiteHref = preg_match('~^https?://~i', $rawWebsite) ? $rawWebsite : 'https://' . $rawWebsite;
@@ -295,7 +296,7 @@ $activeSocials = !empty($socials) ? $socials : [
           </div>
 
           <p style="font-size: 14.5px; font-weight: 800; line-height: 1.25; color: #0f172a; margin: 0 0 10px 0;">
-            <span><?= $esc($t('tagline_1')) ?></span>
+            <span><?= $esc(rtrim($t('tagline_1')) . ' ') ?></span>
             <span style="color: #c026d3;"><?= $esc($t('tagline_highlight')) ?></span>
           </p>
 
@@ -354,12 +355,12 @@ $activeSocials = !empty($socials) ? $socials : [
           </h2>
 
           <div>
-            <?php foreach ($experience as $expIdx => $exp): ?>
+            <?php foreach ($page1Experience as $expIdx => $exp): ?>
               <?php
               $expTags = array_values(array_filter(array_map('trim', explode(',', (string)($exp['role_tags'] ?? '')))));
               $achs = array_values(array_filter(array_map('trim', explode('|', $field($exp, 'achievements')))));
               $firstAch = $achs[0] ?? '';
-              $isLastExp = $expIdx === count($experience) - 1;
+              $isLastExp = $expIdx === count($page1Experience) - 1;
               $padStyle = $expIdx === 0
                   ? 'padding-bottom: 22px;'
                   : ($isLastExp ? 'padding-top: 22px;' : 'padding: 22px 0;');

@@ -9,6 +9,7 @@ require_once __DIR__ . '/CryptoService.php';
 class AuthService
 {
     private string $secret;
+    private string $cliSyncKey;
     private int $ttl;
     private string $issuer;
     private Database $db;
@@ -18,6 +19,7 @@ class AuthService
     {
         $authCfg = $config['auth'] ?? [];
         $this->secret = (string)($authCfg['jwt_secret'] ?? 'coolcv-secret-key');
+        $this->cliSyncKey = (string)($authCfg['cli_sync_key'] ?? '');
         $this->ttl = (int)($authCfg['token_ttl'] ?? 28800);
         $this->issuer = (string)($authCfg['issuer'] ?? 'coolcv-rest-api');
         $this->db = $db;
@@ -79,12 +81,14 @@ class AuthService
     {
         $now = time();
         $exp = $now + $this->ttl;
+        $pwdFp = substr(hash_hmac('sha256', $activeHash, $this->secret), 0, 24);
         $payload = [
             'iss'          => $this->issuer,
             'sub'          => (int)($user['id'] ?? 1),
             'username'     => (string)$user['username'],
             'display_name' => (string)($user['display_name'] ?? $user['username']),
             'role'         => (string)($user['role'] ?? 'admin'),
+            'pwd_fp'       => $pwdFp,
             'iat'          => $now,
             'exp'          => $exp,
         ];
@@ -124,19 +128,44 @@ class AuthService
         $token = $this->extractTokenFromRequest();
         if ($token !== null) {
             $payload = $this->decodeAndVerifyJwt($token);
-            if ($payload !== null) {
+            if ($payload !== null && $this->verifyUserFingerprint($payload)) {
                 return $payload;
             }
         }
 
         if (!empty($_SESSION['auth_token']) && is_string($_SESSION['auth_token'])) {
             $payload = $this->decodeAndVerifyJwt($_SESSION['auth_token']);
-            if ($payload !== null) {
+            if ($payload !== null && $this->verifyUserFingerprint($payload)) {
                 return $payload;
             }
         }
 
         return null;
+    }
+
+    private function verifyUserFingerprint(array $payload): bool
+    {
+        $username = trim((string)($payload['username'] ?? ''));
+        $tokenFp = (string)($payload['pwd_fp'] ?? '');
+        if ($username === '' || $tokenFp === '') {
+            return false;
+        }
+        if ($this->cliSyncKey !== '' && strlen($this->cliSyncKey) >= 32) {
+            $expectedCliFp = substr(hash_hmac('sha256', $this->cliSyncKey, $this->secret), 0, 24);
+            if (hash_equals($expectedCliFp, $tokenFp)) {
+                return true;
+            }
+        }
+        $user = $this->db->findUserByUsername($username);
+        if ($user === null) {
+            return false;
+        }
+        $dbHash = (string)($user['password_hash'] ?? '');
+        if ($dbHash === '') {
+            return false;
+        }
+        $expectedFp = substr(hash_hmac('sha256', $dbHash, $this->secret), 0, 24);
+        return hash_equals($expectedFp, $tokenFp);
     }
 
     public function refreshToken(array $currentPayload): array
@@ -149,6 +178,7 @@ class AuthService
             'username'     => $currentPayload['username'],
             'display_name' => $currentPayload['display_name'] ?? $currentPayload['username'],
             'role'         => $currentPayload['role'] ?? 'admin',
+            'pwd_fp'       => $currentPayload['pwd_fp'] ?? '',
             'iat'          => $now,
             'exp'          => $exp,
         ];

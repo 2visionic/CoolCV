@@ -249,7 +249,9 @@ try {
         $lang = (string)($_GET['lang'] ?? $input['lang'] ?? 'cs');
         $lang = $lang === 'en' ? 'en' : 'cs';
         $dbData = $db->getAllData();
-        $cvPayload = (isset($input['cvData']) && is_array($input['cvData']) && !empty($input['cvData']['profile']))
+        // Custom cvData override is allowed only for authenticated admin
+        $isAdmin = $auth->authenticateRequest() !== null;
+        $cvPayload = ($isAdmin && isset($input['cvData']) && is_array($input['cvData']) && !empty($input['cvData']['profile']))
             ? array_merge($dbData, $input['cvData'])
             : $dbData;
 

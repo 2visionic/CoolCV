@@ -1,7 +1,7 @@
 {
   "projectName": "CoolCV – UX • JS/TS • PHP • .NET Portfolio",
   "version": "2.0.0",
-  "builtAt": "2026-10-29T01:07:04.003Z",
+  "builtAt": "2026-10-30T00:21:05.286Z",
   "readyForUpload": true,
   "buildCommand": "node scripts/coolpublisher-build.mjs",
   "ftp": {

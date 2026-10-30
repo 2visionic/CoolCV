@@ -101,7 +101,7 @@ export default function HeroSection({
           </div>
 
           <p className="text-xl sm:text-2xl font-bold leading-snug max-w-3xl">
-            {t('tagline_1')}
+            {t('tagline_1').trimEnd()}{' '}
             <span
               className={`bg-gradient-to-r bg-clip-text text-transparent ${
                 isDark ? 'from-fuchsia-400 to-purple-400' : 'from-fuchsia-600 to-purple-600'

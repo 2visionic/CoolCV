@@ -36,7 +36,7 @@ $initialStateJson = json_encode([
     'lang'        => $currentLang,
     'initialView' => $initialView,
     'cvData'      => $data,
-], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
 ?>
 <!DOCTYPE html>
 <html lang="<?= e($currentLang) ?>" data-theme="<?= e($currentTheme) ?>" class="<?= $currentTheme === 'dark' ? 'dark' : '' ?>">
